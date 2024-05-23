@@ -19,25 +19,33 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.digitaldiary.data.NotePreview
 import com.example.digitaldiary.presentation.components.FullScreenLoadingIndicator
 import com.example.digitaldiary.presentation.listitem.NotesItem
+import com.example.digitaldiary.presentation.screen.destinations.AddNewNoteScreenDestination
 import com.example.digitaldiary.presentation.viewmodel.MainScreenViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 
 @Composable
 @Destination(start = true)
-fun MainScreen() {
+fun MainScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<MainScreenViewModel>()
     val state by viewModel.state.collectAsState()
 
     if (state.isLoading) {
         FullScreenLoadingIndicator()
     } else {
-        MainScreenContent(state.notesList)
+        MainScreenContent(state.notesList, onNoteClick = { noteId ->
+
+        }, onAddNewClick = {
+            navigator.navigate(AddNewNoteScreenDestination)
+        })
     }
 }
 
 @Composable
-fun MainScreenContent(notesList: List<NotePreview>, onNoteClick: (Int) -> Unit = {}) {
+fun MainScreenContent(
+    notesList: List<NotePreview>, onNoteClick: (Int) -> Unit, onAddNewClick: () -> Unit
+) {
     Box {
         LazyColumn {
             items(notesList) { note ->
@@ -49,7 +57,7 @@ fun MainScreenContent(notesList: List<NotePreview>, onNoteClick: (Int) -> Unit =
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
-            onClick = { },
+            onClick = onAddNewClick,
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.secondary
         ) {
