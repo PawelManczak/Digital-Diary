@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
+    kotlin("kapt")
 }
 
 android {
@@ -50,7 +52,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.hilt.work)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,9 +69,16 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //navigation
+    // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("io.github.raamcosta.compose-destinations:animations-core:1.8.36-beta")
     ksp("io.github.raamcosta.compose-destinations:ksp:1.8.36-beta")
 
+    // Dependency Injection
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-android-compiler:2.50")
+
+    // Hilt navigation-compose integration
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 }

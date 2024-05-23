@@ -4,6 +4,6 @@ data class NotePreview(
     val id: Int,
     val title: String,
     val content: String,
-    val isPhotoAttached: Boolean,
-    val isAudioAttached: Boolean,
+    val isPhotoAttached: Boolean = false,
+    val isAudioAttached: Boolean = false,
 )

@@ -14,9 +14,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,13 +32,14 @@ fun NotesItem(
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
-        .clickable { onNoteClick(note.id) }
-        .padding(16.dp)
         .border(
-            1.dp,
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-            RoundedCornerShape(8.dp)
+            1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f), RoundedCornerShape(8.dp)
         )
+        .clickable { onNoteClick(note.id) }
+        .clip(RoundedCornerShape(16.dp))
+        .padding(16.dp)
+
+
     ) {
         Text(
             text = note.title, style = MaterialTheme.typography.titleMedium
@@ -48,8 +51,8 @@ fun NotesItem(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row{
-            if(note.isPhotoAttached) {
+        Row {
+            if (note.isPhotoAttached) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Icon(
                     imageVector = Icons.Default.Camera,
@@ -60,7 +63,7 @@ fun NotesItem(
             }
             Spacer(modifier = Modifier.width(8.dp))
 
-            if(note.isAudioAttached) {
+            if (note.isAudioAttached) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Icon(
                     painter = painterResource(id = R.drawable.sound),
@@ -77,13 +80,16 @@ fun NotesItem(
 @Composable
 @Preview
 fun NotesItemPreview() {
-    NotesItem(
-        note = NotePreview(
-            id = 1,
-            title = "Title",
-            content = "Content",
-            isPhotoAttached = true,
-            isAudioAttached = true
-        )
-    ) {}
+    Surface {
+        NotesItem(
+            note = NotePreview(
+                id = 1,
+                title = "Title",
+                content = "Content",
+                isPhotoAttached = true,
+                isAudioAttached = true
+            )
+        ) {}
+    }
+
 }
