@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.camera.view)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -91,4 +92,14 @@ dependencies {
 
     // accompanist
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    // camera
+    val camerax_version = "1.3.0"
+    implementation("androidx.camera:camera-camera2:$camerax_version")
+    implementation("androidx.camera:camera-lifecycle:$camerax_version")
+    implementation("androidx.camera:camera-view:$camerax_version")
+    implementation("androidx.camera:camera-extensions:$camerax_version")
+
+    // koil
+    api("io.coil-kt:coil-compose:2.4.0")
 }

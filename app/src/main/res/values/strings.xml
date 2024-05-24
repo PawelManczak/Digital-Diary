@@ -7,4 +7,5 @@
     <string name="submit">Submit</string>
     <string name="add_note">add note</string>
     <string name="location_permission_is_required_to_add_a_note">Location permission is required to add a note!</string>
+    <string name="camera_permission_is_required_to_add_a_photo">Camera permission is required to add a photo!</string>
 </resources>

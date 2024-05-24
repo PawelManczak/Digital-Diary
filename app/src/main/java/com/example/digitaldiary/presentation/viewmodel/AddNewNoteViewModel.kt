@@ -50,7 +50,7 @@ class AddNewNoteViewModel @Inject constructor(
             }
 
             is AddNewNoteFormEvent.PhotoAttached -> {
-                // not implemented
+                state = state.copy(photoUri = event.uri)
             }
 
             is AddNewNoteFormEvent.AudioAttached -> {
