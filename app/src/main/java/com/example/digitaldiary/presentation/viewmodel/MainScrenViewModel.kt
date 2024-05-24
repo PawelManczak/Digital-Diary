@@ -1,9 +1,17 @@
 package com.example.digitaldiary.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.digitaldiary.data.NotePreview
 import com.example.digitaldiary.presentation.state.NotesListState
+import com.google.firebase.Firebase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
+import com.google.firebase.database.getValue
+import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +27,8 @@ class MainScreenViewModel  @Inject constructor(): ViewModel() {
     val state = _state.asStateFlow()
 
     init {
+
+
         viewModelScope.launch {
             delay(2000)
             _state.update {

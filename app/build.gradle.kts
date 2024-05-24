@@ -4,6 +4,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
     kotlin("kapt")
+    alias(libs.plugins.googleGmsGoogleServices)
 }
 
 android {
@@ -61,6 +62,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -81,4 +83,8 @@ dependencies {
     // Hilt navigation-compose integration
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("androidx.work:work-runtime-ktx:2.7.1")
+
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.firebase:firebase-database")
 }
