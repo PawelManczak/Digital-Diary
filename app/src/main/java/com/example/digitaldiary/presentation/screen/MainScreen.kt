@@ -10,6 +10,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,6 +33,10 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun MainScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<MainScreenViewModel>()
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getNotes()
+    }
 
     if (state.isLoading) {
         FullScreenLoadingIndicator()
