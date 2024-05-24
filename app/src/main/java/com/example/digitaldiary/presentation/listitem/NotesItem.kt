@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.digitaldiary.R
@@ -33,7 +34,9 @@ fun NotesItem(
     Column(modifier = Modifier
         .fillMaxWidth()
         .border(
-            1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f), RoundedCornerShape(8.dp)
+            1.dp,
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            RoundedCornerShape(8.dp)
         )
         .clickable { onNoteClick(note.id) }
         .clip(RoundedCornerShape(16.dp))
@@ -41,9 +44,20 @@ fun NotesItem(
 
 
     ) {
-        Text(
-            text = note.title, style = MaterialTheme.typography.titleMedium
-        )
+        Row {
+            Text(
+                text = note.title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.fillMaxWidth(0.8f)
+            )
+            Text(
+                text = note.city,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.End
+            )
+        }
+
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = note.content, style = MaterialTheme.typography.bodyMedium
@@ -82,6 +96,7 @@ fun NotesItemPreview() {
     Surface {
         NotesItem(
             note = NotePreview(
+                city = "City",
                 id = "123",
                 title = "Title",
                 content = "Content",
