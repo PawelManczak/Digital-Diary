@@ -5,15 +5,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.digitaldiary.R
 import com.example.digitaldiary.domain.NoteRepository
+import com.example.digitaldiary.domain.ValidateTitleUseCase
 import com.example.digitaldiary.presentation.event.AddNewNoteFormEvent
 import com.example.digitaldiary.presentation.state.AddNewNoteState
+import com.example.digitaldiary.presentation.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class AddNewNoteViewModel @Inject constructor(private val noteRepository: NoteRepository) :
-    ViewModel() {
+class AddNewNoteViewModel @Inject constructor(
+    private val noteRepository: NoteRepository, private val validateTitleUseCase: ValidateTitleUseCase
+) : ViewModel() {
 
     var state by mutableStateOf(AddNewNoteState())
 
@@ -37,6 +41,11 @@ class AddNewNoteViewModel @Inject constructor(private val noteRepository: NoteRe
 
             is AddNewNoteFormEvent.Submit -> {
 
+                if (!validateTitleUseCase(state.title)) {
+                    state = state.copy(titleError = UiText.StringResource(R.string.title_cannot_be_empty))
+                    return
+                }
+
                 val note = mapOf(
                     "title" to state.title,
                     "content" to state.content,
@@ -44,18 +53,19 @@ class AddNewNoteViewModel @Inject constructor(private val noteRepository: NoteRe
                     "isAudioAttached" to false
                 )
 
-                noteRepository.addNote(note)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Log.d("MainActivity", "Note added successfully.")
-                        } else {
-                            Log.e("MainActivity", "Failed to add note.", task.exception)
-                        }
+                noteRepository.addNote(note).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("MainActivity", "Note added successfully.")
+                    } else {
+                        Log.e("MainActivity", "Failed to add note.", task.exception)
                     }
+                }
+
+                state = AddNewNoteState()
             }
 
             is AddNewNoteFormEvent.Cancel -> {
-                // Cancel the note
+                state = AddNewNoteState()
             }
         }
     }

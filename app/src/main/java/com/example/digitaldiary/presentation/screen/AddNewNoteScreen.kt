@@ -12,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.digitaldiary.R
 import com.example.digitaldiary.presentation.event.AddNewNoteFormEvent
 import com.example.digitaldiary.presentation.viewmodel.AddNewNoteViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -29,14 +31,34 @@ fun AddNewNoteScreen() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "Add new note", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = stringResource(R.string.add_new_note),
+            style = MaterialTheme.typography.titleLarge
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Title")
-        TextField(modifier = Modifier.fillMaxWidth(),
+
+        Text(text = stringResource(R.string.title))
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
             value = vm.state.title,
-            onValueChange = { vm.onEvent(AddNewNoteFormEvent.TitleChanged(it)) })
+            onValueChange = { vm.onEvent(AddNewNoteFormEvent.TitleChanged(it)) },
+            isError = vm.state.titleError != null,
+            supportingText = {
+                if (vm.state.titleError != null) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = vm.state.titleError!!.asString(),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Content")
+
+        Text(text = stringResource(R.string.content))
+
         TextField(modifier = Modifier.fillMaxWidth(),
             value = vm.state.content,
             onValueChange = { vm.onEvent(AddNewNoteFormEvent.ContentChanged(it)) })
@@ -49,7 +71,9 @@ fun AddNewNoteScreen() {
                 .fillMaxWidth()
                 .height(64.dp)
         ) {
-            Text(text = "Submit", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.submit), style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Digital Diary</string>
+    <string name="title_cannot_be_empty">Title cannot be empty!</string>
+    <string name="add_new_note">Add new note</string>
+    <string name="title">Title</string>
+    <string name="content">Content</string>
+    <string name="submit">Submit</string>
+    <string name="add_note">add note</string>
 </resources>

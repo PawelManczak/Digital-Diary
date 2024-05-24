@@ -14,8 +14,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.digitaldiary.R
 import com.example.digitaldiary.data.NotePreview
 import com.example.digitaldiary.presentation.components.FullScreenLoadingIndicator
 import com.example.digitaldiary.presentation.listitem.NotesItem
@@ -61,7 +63,7 @@ fun MainScreenContent(
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.secondary
         ) {
-            Icon(Icons.Default.Add, "add note")
+            Icon(Icons.Default.Add, stringResource(R.string.add_note))
         }
     }
 }
