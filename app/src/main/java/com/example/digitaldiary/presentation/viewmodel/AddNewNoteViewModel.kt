@@ -8,9 +8,6 @@ import androidx.lifecycle.ViewModel
 import com.example.digitaldiary.domain.NoteRepository
 import com.example.digitaldiary.presentation.event.AddNewNoteFormEvent
 import com.example.digitaldiary.presentation.state.AddNewNoteState
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -42,7 +39,9 @@ class AddNewNoteViewModel @Inject constructor(private val noteRepository: NoteRe
 
                 val note = mapOf(
                     "title" to state.title,
-                    "content" to state.content
+                    "content" to state.content,
+                    "isPhotoAttached" to false,
+                    "isAudioAttached" to false
                 )
 
                 noteRepository.addNote(note)

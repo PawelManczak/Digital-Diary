@@ -28,7 +28,7 @@ import com.example.digitaldiary.presentation.icon.Camera
 
 @Composable
 fun NotesItem(
-    note: NotePreview, onNoteClick: (Int) -> Unit
+    note: NotePreview, onNoteClick: (String) -> Unit
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -69,7 +69,6 @@ fun NotesItem(
                     painter = painterResource(id = R.drawable.sound),
                     contentDescription = "Audio attached",
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -83,7 +82,7 @@ fun NotesItemPreview() {
     Surface {
         NotesItem(
             note = NotePreview(
-                id = 1,
+                id = "123",
                 title = "Title",
                 content = "Content",
                 isPhotoAttached = true,

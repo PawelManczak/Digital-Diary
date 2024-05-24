@@ -44,7 +44,7 @@ fun MainScreen(navigator: DestinationsNavigator) {
 
 @Composable
 fun MainScreenContent(
-    notesList: List<NotePreview>, onNoteClick: (Int) -> Unit, onAddNewClick: () -> Unit
+    notesList: List<NotePreview>, onNoteClick: (String) -> Unit, onAddNewClick: () -> Unit
 ) {
     Box {
         LazyColumn {
