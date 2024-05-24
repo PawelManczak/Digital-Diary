@@ -55,7 +55,7 @@ class AddNewNoteViewModel @Inject constructor(
 
                 noteRepository.addNote(note).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Log.d("MainActivity", "Note added successfully.")
+                        state = state.copy(success = true)
                     } else {
                         Log.e("MainActivity", "Failed to add note.", task.exception)
                     }

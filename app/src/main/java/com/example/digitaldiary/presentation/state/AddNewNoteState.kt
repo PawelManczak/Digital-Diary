@@ -10,4 +10,5 @@ data class AddNewNoteState(
     val contentError: UiText? = null,
     val photoUri: Uri? = null,
     val audioUri: Uri? = null,
+    val success: Boolean = false
 )
