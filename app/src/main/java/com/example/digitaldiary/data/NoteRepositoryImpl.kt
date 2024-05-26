@@ -1,5 +1,7 @@
 package com.example.digitaldiary.data;
 
+import android.net.Uri
+import android.util.Log
 import com.example.digitaldiary.domain.NoteRepository
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskCompletionSource
@@ -9,18 +11,31 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
+import com.google.firebase.storage.storage
 
 
 class NoteRepositoryImpl : NoteRepository {
     private val database = Firebase.database
     private val notesRef = database.getReference("notes")
 
-    override fun addNote(note: Map<String, Any>): Task<Void> {
+    override fun addNote(note: Map<String, Any>): Task<String> {
         val noteId = notesRef.push().key
             ?: return Tasks.forException(IllegalStateException("Couldn't generate note ID"))
         val noteWithId = note.toMutableMap()
         noteWithId["id"] = noteId
-        return notesRef.child(noteId).setValue(noteWithId)
+        val taskCompletionSource = TaskCompletionSource<String>()
+
+        notesRef.child(noteId).setValue(noteWithId).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                taskCompletionSource.setResult(noteId)
+            } else {
+                task.exception?.let {
+                    taskCompletionSource.setException(it)
+                } ?: taskCompletionSource.setException(IllegalStateException("Unknown error occurred"))
+            }
+        }
+
+        return taskCompletionSource.task
     }
 
     override fun getAllNotes(): Task<List<NotePreview>> {
@@ -42,6 +57,21 @@ class NoteRepositoryImpl : NoteRepository {
                 taskCompletionSource.setException(error.toException())
             }
         })
+
+        return taskCompletionSource.task
+    }
+
+    override fun uploadPhoto(uri: Uri, noteId: String): Task<Void> {
+        val storageRef = Firebase.storage.reference
+        val taskCompletionSource = TaskCompletionSource<Void>()
+        val uploadTask = storageRef.child("note_photos/$noteId").putFile(uri)
+
+        uploadTask.addOnSuccessListener {
+            taskCompletionSource.setResult(null)
+        }.addOnFailureListener { exception ->
+            Log.e("Firebase", "Image Upload failed", exception)
+            taskCompletionSource.setException(exception)
+        }
 
         return taskCompletionSource.task
     }

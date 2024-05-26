@@ -18,6 +18,8 @@ import com.example.digitaldiary.presentation.state.AddNewNoteState
 import com.example.digitaldiary.presentation.util.UiText
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,26 +67,33 @@ class AddNewNoteViewModel @Inject constructor(
                     return
                 }
 
+                val cachedPhotoUri = state.photoUri
+
                 viewModelScope.launch {
 
                     val note = mapOf(
                         "title" to state.title,
                         "content" to state.content,
-                        "isPhotoAttached" to false,
+                        "isPhotoAttached" to (state.photoUri != null),
                         "isAudioAttached" to false,
                         "city" to getCurrentCityName(),
                     )
 
+
                     noteRepository.addNote(note).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
+                            Log.d("MainActivity", task.result.toString())
+                            noteRepository.uploadPhoto(cachedPhotoUri!!, task.result.toString())
                             state = state.copy(success = true)
                         } else {
                             Log.e("MainActivity", "Failed to add note.", task.exception)
                         }
                     }
+
+                    state = AddNewNoteState()
                 }
 
-                state = AddNewNoteState()
+
             }
 
             is AddNewNoteFormEvent.Cancel -> {

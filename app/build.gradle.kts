@@ -90,6 +90,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("com.google.firebase:firebase-database")
 
+    implementation("com.google.firebase:firebase-storage:20.0.1")
+
     // accompanist
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
@@ -102,4 +104,7 @@ dependencies {
 
     // koil
     api("io.coil-kt:coil-compose:2.4.0")
+
+
+
 }
