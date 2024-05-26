@@ -75,4 +75,25 @@ class NoteRepositoryImpl : NoteRepository {
 
         return taskCompletionSource.task
     }
+
+    override fun getNoteById(noteId: String): Task<NotePreview?> {
+        val taskCompletionSource = TaskCompletionSource<NotePreview?>()
+
+        notesRef.child(noteId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val note = snapshot.getValue(NotePreview::class.java)
+                    taskCompletionSource.setResult(note)
+                } else {
+                    taskCompletionSource.setResult(null)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                taskCompletionSource.setException(error.toException())
+            }
+        })
+
+        return taskCompletionSource.task
+    }
 }

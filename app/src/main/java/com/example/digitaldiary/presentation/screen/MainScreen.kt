@@ -23,6 +23,7 @@ import com.example.digitaldiary.data.NotePreview
 import com.example.digitaldiary.presentation.components.FullScreenLoadingIndicator
 import com.example.digitaldiary.presentation.listitem.NotesItem
 import com.example.digitaldiary.presentation.screen.destinations.AddNewNoteScreenDestination
+import com.example.digitaldiary.presentation.screen.destinations.NoteDetailsScreenDestination
 import com.example.digitaldiary.presentation.viewmodel.MainScreenViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -42,7 +43,7 @@ fun MainScreen(navigator: DestinationsNavigator) {
         FullScreenLoadingIndicator()
     } else {
         MainScreenContent(state.notesList, onNoteClick = { noteId ->
-
+            navigator.navigate(NoteDetailsScreenDestination(noteId))
         }, onAddNewClick = {
             navigator.navigate(AddNewNoteScreenDestination)
         })
