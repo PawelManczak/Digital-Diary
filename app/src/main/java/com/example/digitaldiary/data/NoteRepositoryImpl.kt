@@ -96,4 +96,10 @@ class NoteRepositoryImpl : NoteRepository {
 
         return taskCompletionSource.task
     }
+
+    override fun getPhotoUrl(noteId: String): Task<Uri> {
+        val storageRef = Firebase.storage.reference
+        val photoRef = storageRef.child("note_photos/$noteId")
+        return photoRef.downloadUrl
+    }
 }

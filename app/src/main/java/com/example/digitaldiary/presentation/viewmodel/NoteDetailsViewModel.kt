@@ -1,5 +1,6 @@
 package com.example.digitaldiary.presentation.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -31,17 +32,21 @@ class NoteDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val note = noteRepository.getNoteById(noteId).await()
-                _state.value = NoteDetailsState(isLoading = false, note = note)
+                val photoUrl = noteRepository.getPhotoUrl(noteId).await()
+                _state.value = NoteDetailsState(isLoading = false, note = note, photoUrl = photoUrl)
             } catch (e: Exception) {
                 Log.e("NoteDetailsViewModel", "Failed to fetch note details", e)
             }
         }
     }
+
+
 }
 
 data class NoteDetailsState(
     val isLoading: Boolean = true,
-    val note: NotePreview? = null
+    val note: NotePreview? = null,
+    val photoUrl: Uri? = null
 )
 
 
