@@ -4,13 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,8 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -37,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.digitaldiary.R
@@ -70,8 +70,10 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
     val applicationContext = context.applicationContext
 
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    val audioPermissionState: PermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
-    val locationPermissionState: PermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val audioPermissionState: PermissionState =
+        rememberPermissionState(Manifest.permission.RECORD_AUDIO)
+    val locationPermissionState: PermissionState =
+        rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
 
     val recorder = remember { AndroidAudioRecorder(applicationContext) }
     val player = remember { AndroidAudioPlayer(applicationContext) }
@@ -118,45 +120,52 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
 
         Text(text = stringResource(R.string.content))
 
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
+        TextField(modifier = Modifier.fillMaxWidth(),
             value = vm.state.content,
-            onValueChange = { vm.onEvent(AddNewNoteFormEvent.ContentChanged(it)) }
-        )
+            onValueChange = { vm.onEvent(AddNewNoteFormEvent.ContentChanged(it)) })
 
         Spacer(modifier = Modifier.weight(1f))
 
         if (vm.state.photoUri != null) {
-            AsyncImage(
-                model = vm.state.photoUri,
-                contentDescription = null,
+            Box(
                 modifier = Modifier
-                    .height(300.dp)
-                    .shadow(15.dp),
-                alignment = Alignment.TopCenter
-            )
+                    .wrapContentSize()
+                    .shadow(15.dp)
+            ) {
+                AsyncImage(
+                    model = vm.state.photoUri,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(300.dp)
+                        .shadow(15.dp),
+                    alignment = Alignment.TopCenter
+                )
+                IconButton(onClick = { vm.onEvent(AddNewNoteFormEvent.PhotoAttached(null)) }) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = stringResource(R.string.remove_photo),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
 
             Spacer(Modifier.height(8.dp))
         }
 
         Row(
-            modifier = Modifier.wrapContentSize(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.wrapContentSize(), verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            Icon(
-                imageVector = Icons.Default.Camera,
+            Icon(imageVector = Icons.Default.Camera,
                 contentDescription = stringResource(R.string.attach_photo),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable { showCamera = true }
-            )
+                    .clickable { showCamera = true })
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Icon(
-                painter = painterResource(id = R.drawable.sound),
+            Icon(painter = painterResource(id = R.drawable.sound),
                 contentDescription = stringResource(R.string.attach_audio),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -169,8 +178,15 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
                         if (audioPermissionState.status.isGranted) {
                             showAudioRecorder = true
                         }
-                    }
-            )
+                    })
+
+            if (vm.state.audioUri != null) {
+                Button(onClick = { vm.onEvent(AddNewNoteFormEvent.AudioAttached(null)) }) {
+                    Text(text = stringResource(R.string.remove_attached_audio))
+                }
+            }
+            Spacer(Modifier.weight(1f))
+
         }
 
         if (showAudioRecorder) {
@@ -227,8 +243,7 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
         ) {

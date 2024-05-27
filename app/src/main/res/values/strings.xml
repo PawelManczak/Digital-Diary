@@ -19,4 +19,6 @@
     <string name="stop">Stop</string>
     <string name="stop_audio">Stop Audio</string>
     <string name="play_audio">Play Audio</string>
+    <string name="remove_photo">remove photo</string>
+    <string name="remove_attached_audio">remove attached audio</string>
 </resources>
