@@ -29,7 +29,7 @@ class NoteDetailsViewModel @Inject constructor(
         fetchNoteDetails(noteId)
     }
 
-    private fun fetchNoteDetails(noteId: String) {
+    fun fetchNoteDetails(noteId: String) {
         viewModelScope.launch {
             try {
                 val noteDeferred = async { noteRepository.getNoteById(noteId).await() }

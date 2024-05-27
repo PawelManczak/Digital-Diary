@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.digitaldiary.R
 import com.example.digitaldiary.presentation.icon.Camera
+import com.example.digitaldiary.presentation.screen.destinations.MainScreenDestination
 import com.example.digitaldiary.presentation.screen.destinations.NoteDetailsScreenDestination
 import com.example.digitaldiary.presentation.screencontent.CameraContent
 import com.example.digitaldiary.presentation.util.playback.AndroidAudioPlayer
@@ -87,7 +88,9 @@ fun EditNoteScreen(navigator: DestinationsNavigator, noteId: String) {
 
     if (vm.state.success) {
         LaunchedEffect(true) {
-            navigator.navigate(NoteDetailsScreenDestination(noteId))
+            navigator.popBackStack(
+                MainScreenDestination.route, inclusive = false
+            )
         }
     }
 

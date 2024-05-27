@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,10 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun NoteDetailsScreen(navigator: DestinationsNavigator, id: String) {
 
     val vm = hiltViewModel<NoteDetailsViewModel>()
+
+    LaunchedEffect(true) {
+        vm.fetchNoteDetails(id)
+    }
 
     if (vm.state.value.isLoading) {
         FullScreenLoadingIndicator()

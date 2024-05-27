@@ -1,8 +1,5 @@
 package com.example.digitaldiary.presentation.viewmodel
 
-import com.example.digitaldiary.R
-import kotlinx.coroutines.tasks.await
-
 
 import android.app.Application
 import android.net.Uri
@@ -12,11 +9,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.digitaldiary.R
 import com.example.digitaldiary.domain.NoteRepository
 import com.example.digitaldiary.domain.ValidateTitleUseCase
 import com.example.digitaldiary.presentation.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,9 +31,17 @@ class EditNoteViewModel @Inject constructor(
     fun loadNoteDetails(noteId: String) {
         viewModelScope.launch {
             try {
-                val note = noteRepository.getNoteById(noteId).await()
-                val photoUrl = noteRepository.getPhotoUrl(noteId).await()
-                val audioUrl = noteRepository.getAudioUrl(noteId).await()
+
+                val noteDeferred = async { noteRepository.getNoteById(noteId).await() }
+                val photoDeferred =
+                    async { runCatching { noteRepository.getPhotoUrl(noteId).await() }.getOrNull() }
+                val audioDeferred =
+                    async { runCatching { noteRepository.getAudioUrl(noteId).await() }.getOrNull() }
+
+                val note = noteDeferred.await()
+                val photoUrl = photoDeferred.await()
+                val audioUrl = audioDeferred.await()
+
                 state = state.copy(
                     noteId = noteId,
                     title = note?.title ?: "",
@@ -58,6 +66,9 @@ class EditNoteViewModel @Inject constructor(
             }
 
             is EditNoteFormEvent.PhotoAttached -> {
+                if (event.uri == null) {
+                    deletePhotoFromServer(state.noteId)
+                }
                 state = state.copy(photoUri = event.uri)
             }
 
@@ -87,6 +98,10 @@ class EditNoteViewModel @Inject constructor(
 
                     noteRepository.updateNote(state.noteId, note).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
+                            if(cachedPhotoUri == null) {
+                                deletePhotoFromServer(state.noteId)
+                            }
+
                             cachedPhotoUri?.let {
                                 noteRepository.uploadPhoto(it, state.noteId)
                             }
@@ -94,6 +109,7 @@ class EditNoteViewModel @Inject constructor(
                                 noteRepository.uploadAudio(it, state.noteId)
                             }
                             state = state.copy(success = true)
+
                         } else {
                             Log.e("EditNoteViewModel", "Failed to update note.", task.exception)
                         }
@@ -103,6 +119,17 @@ class EditNoteViewModel @Inject constructor(
 
             is EditNoteFormEvent.Cancel -> {
                 state = EditNoteState()
+            }
+        }
+    }
+
+    private fun deletePhotoFromServer(noteId: String) {
+        viewModelScope.launch {
+            try {
+                noteRepository.deletePhoto(noteId).await()
+                Log.d("EditNoteViewModel", "Photo deleted successfully")
+            } catch (e: Exception) {
+                Log.e("EditNoteViewModel", "Failed to delete photo", e)
             }
         }
     }
