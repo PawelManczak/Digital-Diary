@@ -19,3 +19,12 @@ Digital Diary is an Android application that allows users to create, edit, and m
 - Android Studio
 - A Firebase project with Realtime Database and Storage enabled
 - Google Maps API key
+
+
+![image](https://github.com/PawelManczak/Digital-Diary/assets/64583165/0caacbc2-ace5-4f66-bfc8-8a213064e5c9)
+
+![image](https://github.com/PawelManczak/Digital-Diary/assets/64583165/624726ff-06a9-4a8d-bec2-4742936340b5)
+
+![image](https://github.com/PawelManczak/Digital-Diary/assets/64583165/c09b1be3-b620-4b95-9085-aab965070904)
+
+
