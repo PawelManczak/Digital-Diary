@@ -102,4 +102,19 @@ class NoteRepositoryImpl : NoteRepository {
         val photoRef = storageRef.child("note_photos/$noteId")
         return photoRef.downloadUrl
     }
+
+    override fun uploadAudio(uri: Uri, noteId: String): Task<Void> {
+        val storageRef = Firebase.storage.reference
+        val taskCompletionSource = TaskCompletionSource<Void>()
+        val uploadTask = storageRef.child("note_audios/$noteId").putFile(uri)
+
+        uploadTask.addOnSuccessListener {
+            taskCompletionSource.setResult(null)
+        }.addOnFailureListener { exception ->
+            Log.e("Firebase", "Audio Upload failed", exception)
+            taskCompletionSource.setException(exception)
+        }
+
+        return taskCompletionSource.task
+    }
 }

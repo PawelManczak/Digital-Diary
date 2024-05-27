@@ -8,4 +8,10 @@
     <string name="add_note">add note</string>
     <string name="location_permission_is_required_to_add_a_note">Location permission is required to add a note!</string>
     <string name="camera_permission_is_required_to_add_a_photo">Camera permission is required to add a photo!</string>
+    <string name="attach_photo">attach photo</string>
+    <string name="attach_audio">attach audio</string>
+    <string name="start_recording">Start recording</string>
+    <string name="stop_recording">Stop recording</string>
+    <string name="play">Play</string>
+    <string name="stop_playing">Stop playing</string>
 </resources>

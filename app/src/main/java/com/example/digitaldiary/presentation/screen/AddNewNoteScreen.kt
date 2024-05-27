@@ -2,9 +2,11 @@ package com.example.digitaldiary.presentation.screen
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -34,12 +37,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.digitaldiary.R
 import com.example.digitaldiary.presentation.event.AddNewNoteFormEvent
 import com.example.digitaldiary.presentation.icon.Camera
 import com.example.digitaldiary.presentation.screencontent.CameraContent
+import com.example.digitaldiary.presentation.util.playback.AndroidAudioPlayer
+import com.example.digitaldiary.presentation.util.record.AndroidAudioRecorder
 import com.example.digitaldiary.presentation.viewmodel.AddNewNoteViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -47,6 +53,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.io.File
 
 @SuppressLint("PermissionLaunchedDuringComposition")
 @OptIn(ExperimentalPermissionsApi::class)
@@ -57,18 +64,19 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
     val vm = hiltViewModel<AddNewNoteViewModel>()
 
     var showCamera by remember { mutableStateOf(false) }
+    var showAudioRecorder by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val applicationContext = context.applicationContext
 
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    val audioPermissionState: PermissionState =
-        rememberPermissionState(Manifest.permission.RECORD_AUDIO)
-    val locationPermissionState: PermissionState =
-        rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val audioPermissionState: PermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
+    val locationPermissionState: PermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
 
+    val recorder = remember { AndroidAudioRecorder(applicationContext) }
+    val player = remember { AndroidAudioPlayer(applicationContext) }
 
-
-
+    var audioFile: File? by remember { mutableStateOf(null) }
 
     if (vm.state.success) {
         LaunchedEffect(true) {
@@ -105,32 +113,40 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
                 }
             },
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(text = stringResource(R.string.content))
 
-        TextField(modifier = Modifier.fillMaxWidth(),
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
             value = vm.state.content,
-            onValueChange = { vm.onEvent(AddNewNoteFormEvent.ContentChanged(it)) })
+            onValueChange = { vm.onEvent(AddNewNoteFormEvent.ContentChanged(it)) }
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        if(vm.state.photoUri != null) {
+        if (vm.state.photoUri != null) {
             AsyncImage(
                 model = vm.state.photoUri,
                 contentDescription = null,
-                modifier = Modifier.height(300.dp).shadow(15.dp),
+                modifier = Modifier
+                    .height(300.dp)
+                    .shadow(15.dp),
                 alignment = Alignment.TopCenter
             )
 
             Spacer(Modifier.height(8.dp))
         }
 
-        Row {
+        Row(
+            modifier = Modifier.wrapContentSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Spacer(modifier = Modifier.height(4.dp))
             Icon(
                 imageVector = Icons.Default.Camera,
-                contentDescription = "attach photo",
+                contentDescription = stringResource(R.string.attach_photo),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .size(48.dp)
@@ -141,11 +157,57 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
 
             Icon(
                 painter = painterResource(id = R.drawable.sound),
-                contentDescription = "attach audio",
+                contentDescription = stringResource(R.string.attach_audio),
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(48.dp)
-            )
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable {
+                        if (!audioPermissionState.status.isGranted) {
+                            audioPermissionState.launchPermissionRequest()
+                        }
 
+                        if (audioPermissionState.status.isGranted) {
+                            showAudioRecorder = true
+                        }
+                    }
+            )
+        }
+
+        if (showAudioRecorder) {
+            Column(
+                modifier = Modifier.wrapContentSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button(onClick = {
+                    val cacheDir = applicationContext.cacheDir
+                    File(cacheDir, "audio.mp3").also {
+                        recorder.start(it)
+                        audioFile = it
+                    }
+                }) {
+                    Text(text = stringResource(R.string.start_recording))
+                }
+                Button(onClick = {
+                    recorder.stop()
+                    audioFile?.let {
+                        vm.onEvent(AddNewNoteFormEvent.AudioAttached(Uri.fromFile(it)))
+                    }
+                    showAudioRecorder = false
+                }) {
+                    Text(text = stringResource(R.string.stop_recording))
+                }
+                Button(onClick = {
+                    player.playFile(audioFile ?: return@Button)
+                }) {
+                    Text(text = stringResource(R.string.play))
+                }
+                Button(onClick = {
+                    player.stop()
+                }) {
+                    Text(text = stringResource(R.string.stop_playing))
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -165,7 +227,8 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }, modifier = Modifier
+            },
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
         ) {
@@ -174,7 +237,6 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
             )
         }
     }
-
 
     if (showCamera) {
         if (!cameraPermissionState.status.isGranted) {
@@ -194,9 +256,5 @@ fun AddNewNoteScreen(navigator: DestinationsNavigator) {
                 Toast.LENGTH_SHORT
             ).show()
         }
-
-
     }
-
 }
-

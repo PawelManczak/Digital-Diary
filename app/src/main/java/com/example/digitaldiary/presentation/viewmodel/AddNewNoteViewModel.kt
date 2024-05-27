@@ -18,8 +18,6 @@ import com.example.digitaldiary.presentation.state.AddNewNoteState
 import com.example.digitaldiary.presentation.util.UiText
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,7 +54,7 @@ class AddNewNoteViewModel @Inject constructor(
             }
 
             is AddNewNoteFormEvent.AudioAttached -> {
-                // not implemented
+                state = state.copy(audioUri = event.uri)
             }
 
             is AddNewNoteFormEvent.Submit -> {
@@ -68,6 +66,7 @@ class AddNewNoteViewModel @Inject constructor(
                 }
 
                 val cachedPhotoUri = state.photoUri
+                val cachedAudioUri = state.audioUri
 
                 viewModelScope.launch {
 
@@ -75,7 +74,7 @@ class AddNewNoteViewModel @Inject constructor(
                         "title" to state.title,
                         "content" to state.content,
                         "isPhotoAttached" to (state.photoUri != null),
-                        "isAudioAttached" to false,
+                        "isAudioAttached" to (state.audioUri != null),
                         "city" to getCurrentCityName(),
                     )
 
@@ -83,7 +82,13 @@ class AddNewNoteViewModel @Inject constructor(
                     noteRepository.addNote(note).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Log.d("MainActivity", task.result.toString())
-                            noteRepository.uploadPhoto(cachedPhotoUri!!, task.result.toString())
+                            val noteId = task.result.toString()
+                            cachedPhotoUri?.let {
+                                noteRepository.uploadPhoto(it, noteId)
+                            }
+                            cachedAudioUri?.let {
+                                noteRepository.uploadAudio(it, noteId)
+                            }
                             state = state.copy(success = true)
                         } else {
                             Log.e("MainActivity", "Failed to add note.", task.exception)
