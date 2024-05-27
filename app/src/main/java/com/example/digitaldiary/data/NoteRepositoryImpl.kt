@@ -17,6 +17,7 @@ import com.google.firebase.storage.storage
 class NoteRepositoryImpl : NoteRepository {
     private val database = Firebase.database
     private val notesRef = database.getReference("notes")
+    val storageRef = Firebase.storage.reference
 
     override fun addNote(note: Map<String, Any>): Task<String> {
         val noteId = notesRef.push().key
@@ -62,7 +63,6 @@ class NoteRepositoryImpl : NoteRepository {
     }
 
     override fun uploadPhoto(uri: Uri, noteId: String): Task<Void> {
-        val storageRef = Firebase.storage.reference
         val taskCompletionSource = TaskCompletionSource<Void>()
         val uploadTask = storageRef.child("note_photos/$noteId").putFile(uri)
 
@@ -70,6 +70,20 @@ class NoteRepositoryImpl : NoteRepository {
             taskCompletionSource.setResult(null)
         }.addOnFailureListener { exception ->
             Log.e("Firebase", "Image Upload failed", exception)
+            taskCompletionSource.setException(exception)
+        }
+
+        return taskCompletionSource.task
+    }
+
+    override fun uploadAudio(uri: Uri, noteId: String): Task<Void> {
+        val taskCompletionSource = TaskCompletionSource<Void>()
+        val uploadTask = storageRef.child("note_audios/$noteId").putFile(uri)
+
+        uploadTask.addOnSuccessListener {
+            taskCompletionSource.setResult(null)
+        }.addOnFailureListener { exception ->
+            Log.e("Firebase", "Audio Upload failed", exception)
             taskCompletionSource.setException(exception)
         }
 
@@ -98,23 +112,14 @@ class NoteRepositoryImpl : NoteRepository {
     }
 
     override fun getPhotoUrl(noteId: String): Task<Uri> {
-        val storageRef = Firebase.storage.reference
         val photoRef = storageRef.child("note_photos/$noteId")
         return photoRef.downloadUrl
     }
 
-    override fun uploadAudio(uri: Uri, noteId: String): Task<Void> {
-        val storageRef = Firebase.storage.reference
-        val taskCompletionSource = TaskCompletionSource<Void>()
-        val uploadTask = storageRef.child("note_audios/$noteId").putFile(uri)
-
-        uploadTask.addOnSuccessListener {
-            taskCompletionSource.setResult(null)
-        }.addOnFailureListener { exception ->
-            Log.e("Firebase", "Audio Upload failed", exception)
-            taskCompletionSource.setException(exception)
-        }
-
-        return taskCompletionSource.task
+    override fun getAudioUrl(noteId: String): Task<Uri> {
+        val audioRef = storageRef.child("note_audios/$noteId")
+        return audioRef.downloadUrl
     }
+
+
 }

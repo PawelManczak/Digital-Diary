@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.digitaldiary.data.NotePreview
 import com.example.digitaldiary.domain.NoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -31,11 +32,23 @@ class NoteDetailsViewModel @Inject constructor(
     private fun fetchNoteDetails(noteId: String) {
         viewModelScope.launch {
             try {
-                val note = noteRepository.getNoteById(noteId).await()
-                val photoUrl = noteRepository.getPhotoUrl(noteId).await()
-                _state.value = NoteDetailsState(isLoading = false, note = note, photoUrl = photoUrl)
+                val noteDeferred = async { noteRepository.getNoteById(noteId).await() }
+                val photoDeferred = async { runCatching { noteRepository.getPhotoUrl(noteId).await() }.getOrNull() }
+                val audioDeferred = async { runCatching { noteRepository.getAudioUrl(noteId).await() }.getOrNull() }
+
+                val note = noteDeferred.await()
+                val photoUrl = photoDeferred.await()
+                val audioUrl = audioDeferred.await()
+
+                _state.value = NoteDetailsState(
+                    isLoading = false,
+                    note = note,
+                    photoUrl = photoUrl,
+                    audioUrl = audioUrl
+                )
             } catch (e: Exception) {
                 Log.e("NoteDetailsViewModel", "Failed to fetch note details", e)
+                _state.value = NoteDetailsState(isLoading = false)
             }
         }
     }
@@ -46,7 +59,8 @@ class NoteDetailsViewModel @Inject constructor(
 data class NoteDetailsState(
     val isLoading: Boolean = true,
     val note: NotePreview? = null,
-    val photoUrl: Uri? = null
+    val photoUrl: Uri? = null,
+    val audioUrl: Uri? = null
 )
 
 

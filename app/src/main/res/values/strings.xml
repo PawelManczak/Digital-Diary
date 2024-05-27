@@ -14,4 +14,9 @@
     <string name="stop_recording">Stop recording</string>
     <string name="play">Play</string>
     <string name="stop_playing">Stop playing</string>
+    <string name="note_details">Note Details</string>
+    <string name="note_photo">Note Photo</string>
+    <string name="stop">Stop</string>
+    <string name="stop_audio">Stop Audio</string>
+    <string name="play_audio">Play Audio</string>
 </resources>
