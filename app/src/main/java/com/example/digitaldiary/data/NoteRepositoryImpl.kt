@@ -121,5 +121,21 @@ class NoteRepositoryImpl : NoteRepository {
         return audioRef.downloadUrl
     }
 
+    override fun updateNote(noteId: String, note: Map<String, Any>): Task<Void> {
+        val taskCompletionSource = TaskCompletionSource<Void>()
+
+        notesRef.child(noteId).updateChildren(note).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                taskCompletionSource.setResult(null)
+            } else {
+                task.exception?.let {
+                    taskCompletionSource.setException(it)
+                } ?: taskCompletionSource.setException(IllegalStateException("Unknown error occurred"))
+            }
+        }
+
+        return taskCompletionSource.task
+    }
+
 
 }

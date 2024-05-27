@@ -15,4 +15,5 @@ interface NoteRepository {
     fun getPhotoUrl(noteId: String): Task<Uri>
     fun uploadAudio(uri: Uri, noteId: String): Task<Void>
     fun getAudioUrl(noteId: String): Task<Uri>
+    fun updateNote(noteId: String, note: Map<String, Any>): Task<Void>
 }
