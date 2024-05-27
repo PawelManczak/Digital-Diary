@@ -1,8 +1,6 @@
 package com.example.digitaldiary.presentation.viewmodel
 
 
-import android.app.Application
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.digitaldiary.R
 import com.example.digitaldiary.domain.NoteRepository
 import com.example.digitaldiary.domain.ValidateTitleUseCase
+import com.example.digitaldiary.presentation.event.EditNoteFormEvent
+import com.example.digitaldiary.presentation.state.EditNoteState
 import com.example.digitaldiary.presentation.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -21,7 +21,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditNoteViewModel @Inject constructor(
-    private val application: Application,
     private val noteRepository: NoteRepository,
     private val validateTitleUseCase: ValidateTitleUseCase
 ) : ViewModel() {
@@ -148,21 +147,3 @@ class EditNoteViewModel @Inject constructor(
     }
 }
 
-sealed class EditNoteFormEvent {
-    data class TitleChanged(val title: String) : EditNoteFormEvent()
-    data class ContentChanged(val content: String) : EditNoteFormEvent()
-    data class PhotoAttached(val uri: Uri?) : EditNoteFormEvent()
-    data class AudioAttached(val uri: Uri?) : EditNoteFormEvent()
-    object Submit : EditNoteFormEvent()
-    object Cancel : EditNoteFormEvent()
-}
-
-data class EditNoteState(
-    val noteId: String = "",
-    val title: String = "",
-    val content: String = "",
-    val photoUri: Uri? = null,
-    val audioUri: Uri? = null,
-    val titleError: UiText? = null,
-    val success: Boolean = false
-)

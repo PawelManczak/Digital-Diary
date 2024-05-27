@@ -87,7 +87,7 @@ fun MainScreenContent(
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.secondary
         ) {
-            Icon(Icons.Default.Place, "map")
+            Icon(Icons.Default.Place, stringResource(R.string.map))
         }
     }
 }

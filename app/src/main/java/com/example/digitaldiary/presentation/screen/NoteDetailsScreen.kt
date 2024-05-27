@@ -36,7 +36,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.digitaldiary.R
 import com.example.digitaldiary.presentation.components.FullScreenLoadingIndicator
 import com.example.digitaldiary.presentation.screen.destinations.EditNoteScreenDestination
-import com.example.digitaldiary.presentation.viewmodel.NoteDetailsState
+import com.example.digitaldiary.presentation.state.NoteDetailsState
 import com.example.digitaldiary.presentation.viewmodel.NoteDetailsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -57,8 +57,6 @@ fun NoteDetailsScreen(navigator: DestinationsNavigator, id: String) {
         NoteDetailsContent(vm.state.value) {
             navigator.navigate(EditNoteScreenDestination(id))
         }
-
-
     }
 
 

@@ -1,13 +1,12 @@
 package com.example.digitaldiary.presentation.viewmodel
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.digitaldiary.data.NotePreview
 import com.example.digitaldiary.domain.NoteRepository
+import com.example.digitaldiary.presentation.state.NoteDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -55,12 +54,5 @@ class NoteDetailsViewModel @Inject constructor(
 
 
 }
-
-data class NoteDetailsState(
-    val isLoading: Boolean = true,
-    val note: NotePreview? = null,
-    val photoUrl: Uri? = null,
-    val audioUrl: Uri? = null
-)
 
 

@@ -13,6 +13,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 
+val PHOTOS_PATH = "note_photos"
+val AUDIOS_PATH = "note_audios"
 
 class NoteRepositoryImpl : NoteRepository {
     private val database = Firebase.database
@@ -32,7 +34,8 @@ class NoteRepositoryImpl : NoteRepository {
             } else {
                 task.exception?.let {
                     taskCompletionSource.setException(it)
-                } ?: taskCompletionSource.setException(IllegalStateException("Unknown error occurred"))
+                }
+                    ?: taskCompletionSource.setException(IllegalStateException("Unknown error occurred"))
             }
         }
 
@@ -64,7 +67,7 @@ class NoteRepositoryImpl : NoteRepository {
 
     override fun uploadPhoto(uri: Uri, noteId: String): Task<Void> {
         val taskCompletionSource = TaskCompletionSource<Void>()
-        val uploadTask = storageRef.child("note_photos/$noteId").putFile(uri)
+        val uploadTask = storageRef.child("$PHOTOS_PATH/$noteId").putFile(uri)
 
         uploadTask.addOnSuccessListener {
             taskCompletionSource.setResult(null)
@@ -78,7 +81,7 @@ class NoteRepositoryImpl : NoteRepository {
 
     override fun uploadAudio(uri: Uri, noteId: String): Task<Void> {
         val taskCompletionSource = TaskCompletionSource<Void>()
-        val uploadTask = storageRef.child("note_audios/$noteId").putFile(uri)
+        val uploadTask = storageRef.child("$AUDIOS_PATH/$noteId").putFile(uri)
 
         uploadTask.addOnSuccessListener {
             taskCompletionSource.setResult(null)
@@ -112,12 +115,12 @@ class NoteRepositoryImpl : NoteRepository {
     }
 
     override fun getPhotoUrl(noteId: String): Task<Uri> {
-        val photoRef = storageRef.child("note_photos/$noteId")
+        val photoRef = storageRef.child("$PHOTOS_PATH/$noteId")
         return photoRef.downloadUrl
     }
 
     override fun getAudioUrl(noteId: String): Task<Uri> {
-        val audioRef = storageRef.child("note_audios/$noteId")
+        val audioRef = storageRef.child("$AUDIOS_PATH/$noteId")
         return audioRef.downloadUrl
     }
 
@@ -130,7 +133,8 @@ class NoteRepositoryImpl : NoteRepository {
             } else {
                 task.exception?.let {
                     taskCompletionSource.setException(it)
-                } ?: taskCompletionSource.setException(IllegalStateException("Unknown error occurred"))
+                }
+                    ?: taskCompletionSource.setException(IllegalStateException("Unknown error occurred"))
             }
         }
 
@@ -139,7 +143,7 @@ class NoteRepositoryImpl : NoteRepository {
 
     override fun deletePhoto(noteId: String): Task<Void> {
         val taskCompletionSource = TaskCompletionSource<Void>()
-        val photoRef = storageRef.child("note_photos/$noteId")
+        val photoRef = storageRef.child("$PHOTOS_PATH/$noteId")
 
         photoRef.delete().addOnSuccessListener {
             taskCompletionSource.setResult(null)
@@ -153,7 +157,7 @@ class NoteRepositoryImpl : NoteRepository {
 
     override fun deleteAudio(noteId: String): Task<Void> {
         val taskCompletionSource = TaskCompletionSource<Void>()
-        val photoRef = storageRef.child("note_audios/$noteId")
+        val photoRef = storageRef.child("$AUDIOS_PATH/$noteId")
 
         photoRef.delete().addOnSuccessListener {
             taskCompletionSource.setResult(null)

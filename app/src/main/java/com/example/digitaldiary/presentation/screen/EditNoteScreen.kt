@@ -43,11 +43,10 @@ import coil.compose.AsyncImage
 import com.example.digitaldiary.R
 import com.example.digitaldiary.presentation.icon.Camera
 import com.example.digitaldiary.presentation.screen.destinations.MainScreenDestination
-import com.example.digitaldiary.presentation.screen.destinations.NoteDetailsScreenDestination
 import com.example.digitaldiary.presentation.screencontent.CameraContent
 import com.example.digitaldiary.presentation.util.playback.AndroidAudioPlayer
 import com.example.digitaldiary.presentation.util.record.AndroidAudioRecorder
-import com.example.digitaldiary.presentation.viewmodel.EditNoteFormEvent
+import com.example.digitaldiary.presentation.event.EditNoteFormEvent
 import com.example.digitaldiary.presentation.viewmodel.EditNoteViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
