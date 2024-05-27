@@ -7,4 +7,6 @@ data class NotePreview(
     val city: String = "",
     val isPhotoAttached: Boolean = false,
     val isAudioAttached: Boolean = false,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 )

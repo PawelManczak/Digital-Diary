@@ -68,20 +68,24 @@ class AddNewNoteViewModel @Inject constructor(
                 val cachedPhotoUri = state.photoUri
                 val cachedAudioUri = state.audioUri
 
+
+
                 viewModelScope.launch {
+                    val locationResult = getCurrentCityNameAndLocation()
 
                     val note = mapOf(
                         "title" to state.title,
                         "content" to state.content,
                         "isPhotoAttached" to (state.photoUri != null),
                         "isAudioAttached" to (state.audioUri != null),
-                        "city" to getCurrentCityName(),
+                        "city" to locationResult.first,
+                        "latitude" to locationResult.second.latitude,
+                        "longitude" to locationResult.second.longitude
                     )
 
 
                     noteRepository.addNote(note).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            Log.d("MainActivity", task.result.toString())
                             val noteId = task.result.toString()
                             cachedPhotoUri?.let {
                                 noteRepository.uploadPhoto(it, noteId)
@@ -103,20 +107,23 @@ class AddNewNoteViewModel @Inject constructor(
 
             is AddNewNoteFormEvent.Cancel -> {
                 state = AddNewNoteState()
+
             }
+
         }
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun getCurrentCityName(): String = withContext(Dispatchers.IO) {
-        var cityName = "Unknown Location"
-        val location: Location? = fusedLocationClient.lastLocation.await()
-        location?.let {
-            val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
-            val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
-            cityName = addresses?.get(0)?.locality ?: "Unknown Location"
+    suspend fun getCurrentCityNameAndLocation(): Pair<String, Location> =
+        withContext(Dispatchers.IO) {
+            var cityName = "Unknown Location"
+            val location: Location? = fusedLocationClient.lastLocation.await()
+            location?.let {
+                val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
+                val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
+                cityName = addresses?.get(0)?.locality ?: "Unknown Location"
+            }
+            return@withContext Pair(cityName, location!!)
         }
-        return@withContext cityName
-    }
 }
 

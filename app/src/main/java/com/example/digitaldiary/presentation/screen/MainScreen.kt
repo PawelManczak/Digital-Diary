@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import com.example.digitaldiary.data.NotePreview
 import com.example.digitaldiary.presentation.components.FullScreenLoadingIndicator
 import com.example.digitaldiary.presentation.listitem.NotesItem
 import com.example.digitaldiary.presentation.screen.destinations.AddNewNoteScreenDestination
+import com.example.digitaldiary.presentation.screen.destinations.MapScreenDestination
 import com.example.digitaldiary.presentation.screen.destinations.NoteDetailsScreenDestination
 import com.example.digitaldiary.presentation.viewmodel.MainScreenViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -46,13 +48,18 @@ fun MainScreen(navigator: DestinationsNavigator) {
             navigator.navigate(NoteDetailsScreenDestination(noteId))
         }, onAddNewClick = {
             navigator.navigate(AddNewNoteScreenDestination)
+        }, onMapScreenClick = {
+            navigator.navigate(MapScreenDestination)
         })
     }
 }
 
 @Composable
 fun MainScreenContent(
-    notesList: List<NotePreview>, onNoteClick: (String) -> Unit, onAddNewClick: () -> Unit
+    notesList: List<NotePreview>,
+    onNoteClick: (String) -> Unit,
+    onAddNewClick: () -> Unit,
+    onMapScreenClick: () -> Unit
 ) {
     Box {
         LazyColumn {
@@ -70,6 +77,17 @@ fun MainScreenContent(
             contentColor = MaterialTheme.colorScheme.secondary
         ) {
             Icon(Icons.Default.Add, stringResource(R.string.add_note))
+        }
+
+        FloatingActionButton(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp),
+            onClick = onMapScreenClick,
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.secondary
+        ) {
+            Icon(Icons.Default.Place, "map")
         }
     }
 }
