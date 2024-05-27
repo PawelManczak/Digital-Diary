@@ -151,5 +151,19 @@ class NoteRepositoryImpl : NoteRepository {
         return taskCompletionSource.task
     }
 
+    override fun deleteAudio(noteId: String): Task<Void> {
+        val taskCompletionSource = TaskCompletionSource<Void>()
+        val photoRef = storageRef.child("note_audios/$noteId")
+
+        photoRef.delete().addOnSuccessListener {
+            taskCompletionSource.setResult(null)
+        }.addOnFailureListener { exception ->
+            Log.e("Firebase", "Image Deletion failed", exception)
+            taskCompletionSource.setException(exception)
+        }
+
+        return taskCompletionSource.task
+    }
+
 
 }

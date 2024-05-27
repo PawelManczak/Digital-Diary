@@ -98,8 +98,12 @@ class EditNoteViewModel @Inject constructor(
 
                     noteRepository.updateNote(state.noteId, note).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            if(cachedPhotoUri == null) {
+                            if (cachedPhotoUri == null) {
                                 deletePhotoFromServer(state.noteId)
+                            }
+
+                            if (cachedAudioUri == null) {
+                                deleteAudioFromServer(state.noteId)
                             }
 
                             cachedPhotoUri?.let {
@@ -127,7 +131,16 @@ class EditNoteViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 noteRepository.deletePhoto(noteId).await()
-                Log.d("EditNoteViewModel", "Photo deleted successfully")
+            } catch (e: Exception) {
+                Log.e("EditNoteViewModel", "Failed to delete photo", e)
+            }
+        }
+    }
+
+    private fun deleteAudioFromServer(noteId: String) {
+        viewModelScope.launch {
+            try {
+                noteRepository.deleteAudio(noteId).await()
             } catch (e: Exception) {
                 Log.e("EditNoteViewModel", "Failed to delete photo", e)
             }
